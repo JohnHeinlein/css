@@ -1,0 +1,1479 @@
+/* ==UserStyle==
+@name           Ops 3
+@namespace      github.com/openstyles/stylus
+@version        1.0.0
+@description    Attempt to separate style from layout tweaks to improve maintainability and readability.
+@author         JDanger
+@preprocessor 	less
+==/UserStyle== */
+
+.debug(){
+	outline:3px solid red;
+}
+
+/*****************************/
+/* Overrides
+/***************************/
+:root{
+	--bs-body-bg:#000 !important;
+}
+/*****************************/
+/* DEFINITIONS
+/***************************/
+
+/* User Variables - Feed into functions below. */
+@base-dark: 	#121212;
+@base-prime: 	#ff5722;
+//@base-prime: 	#e010ef;
+@base-text: 	#f8f8f8;
+@base-shadow: 	#080808;
+@base-bg:		#f6f6f6;
+
+@shadow-big:	2px 2px 5px @base-shadow;
+@shadow-big-c:  0px 2px 5px @base-shadow;
+@shadow-small: 	1px 1px 2px @base-shadow;
+@shadow-small-c:0px 1px 2px @base-shadow;
+
+@radius-big: 20px;
+@radius-small: 10px;
+
+// Color library
+.c(@darken: 0, @spin: 0, @alpha:0%){
+	c:  fadeout(darken( spin(@base-prime, (@spin + 180)),(@darken * 10) ),@alpha);	// Complementary color to primary
+	d:  fadeout(lighten(spin(@base-dark , @spin),		 (@darken * 10) ),@alpha);	// Base for material shades
+	t:  fadeout(darken( spin(@base-text , @spin),		 (@darken * 10) ),@alpha);	// Normal, readable font color
+	p:  fadeout(darken( spin(@base-prime, @spin),		 (@darken * 10) ),@alpha);	// Primary color
+	bg: fadeout(darken( spin(@base-bg,	  @spin),		 (@darken * 10)), @alpha);
+}
+
+.button(@layer:2, @hover-color:.c()[c]){
+	.p(@layer);
+	transition: background-color 0.1s linear;
+	&:hover{
+		background-color: @hover-color;
+		color: .c()[d];
+	}
+}
+
+// *************************
+// Shadows
+.shadow(@x:1px, @y:1px, @r:3px, @c:black){
+	box-shadow: @x @y @r @c;
+}
+.shadow(inset){
+	box-shadow: inset @shadow-small;
+}
+
+// *************************
+// Panels
+.p(@layer:0,@shadow:5px,@radius:10px,@alpha:0%){
+	background-color: .c(@darken:@layer,@alpha:@alpha)[d];
+	color: .c()[t];
+	.shadow() !important;
+	
+	border-radius:@radius;
+	border:unset !important;
+	filter:unset !important;
+}
+
+// *************************
+// Background panels 
+.bg(@_){
+	.p(0,5px,20px,30%);
+	transition:all 0.1s linear;
+}
+.bg(prime){
+	border: 3px solid .c()[p] !important;
+	box-shadow:inset 0px 0px 10px .c()[p];
+	background-color: fadeout(.c(5)[p],50%) !important;
+}
+.bg(prime, vertical){.bg(prime); border-width:0px 3px !important;}
+.bg(prime, horizontal){.bg(prime); border-width:3px 0px !important;}
+
+.bg(comp){
+	border: 3px solid .c(2)[c] !important;
+	box-shadow:inset 0px 0px 10px .c(2)[c];
+	background-color: fadeout(.c(5)[c],50%) !important;
+}
+.bg(comp, vertical){.bg(comp); border-width:0px 3px !important;}
+.bg(comp, horizontal){.bg(comp); border-width:3px 0px !important;}
+.bg-fade(){ // TODO: Make rainbows :)
+	background: linear-gradient(.c(0,@alpha:50%)[d], .c(0,@alpha:50%)[d]) padding-box,
+    			linear-gradient(to right, fadeout(darkblue,50%), fadeout(darkorchid,50%)) border-box !important;
+	border: 4px solid transparent !important;
+	border-width:0px 3px !important;
+}
+
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net"),url-prefix("https://portal.sunnking.com"){
+	// Global control stylings
+	html{
+		scrollbar-width:thin;
+		scrollbar-color: .c(2)[d] .c()[d];
+	}
+	
+	// Background Override
+	.float-container {background-image: none;}
+	body {
+		background-image: url("https://i.imgur.com/QSiWgKX.png") !important;
+		background-size: cover;
+		background-attachment:fixed;
+	}
+	
+	input,select,textarea{
+		border-radius:5px;	
+		border:1px solid #d4d4d4 !important;
+		&:focus-visible{
+			outline:2px solid .c()[p] !important;
+		}
+	}
+	textarea{
+		scrollbar-color: .c()[d] .c(2)[d];
+		overflow:auto;
+	}
+	button{
+		transition: all 0.1s linear !important;
+	}
+	
+	// ******************** //
+	// ADD-ON ELEMENTS		//
+	// ******************** //
+	.jd-hidden{
+		//display: none;
+		// width:0px !important;
+		transform:scale(0);
+		pointer-events: none
+	}
+	
+	// SKU Printing
+	@media print and (min-width:4in){
+		#jd-print{
+			
+			width:6in !important;
+			height:4in !important;
+			
+			display:grid !important;
+				grid-template-columns: 2in 4in;
+				grid-template-rows:  2in 2in;
+				grid-template-areas: 
+					"qr sku"
+					"prod prod";
+				place-items:stretch;
+			.qr  {grid-area:qr}
+			.sku {grid-area:sku}
+			.prod{grid-area:prod}
+			
+			.qr{
+				place-self:stretch;
+				padding:5px;
+			}
+			.sku{
+				place-self:center center;
+				font-size:1in;
+			}
+			.prod{
+				font-size:0.4in;
+				place-self:center center;
+				text-align:center;
+			}
+			//>*{border:1px solid black;}
+		}
+		
+		// Sale Stickers
+		
+	}
+	
+	// Add product character counter
+	#jd-charcount-wrapper{
+		&,>*{margin:0px !important;}
+		display:flex;
+		width:fit-content !important;
+		position:absolute;
+		top:0;
+		right:0;
+	}
+	
+	// Cheat menu
+	#jd-cheat-button{
+		border: unset;
+		width:30px;
+		height:$width;
+		border-radius: 25px;
+		margin:0px 10px !important;
+	}
+	#jd-cheat-container{
+		.p();
+		transition:
+			width 0.25s,
+			box-shadow 0.25s,
+			transform 0.25s;
+		
+		position:absolute !important;
+		width:250px;
+		height:fit-content;
+		z-index:99;
+		overflow:hidden;
+		
+		background: linear-gradient(
+			to right,
+			.c(@alpha:15%, @darken:2)[p],
+			20%,
+			.c(@alpha:20%, @darken: 0)[d]) !important;
+		backdrop-filter: blur(5px);
+		
+		box-shadow:0px 0px 20px 0px .c()[d] !important;
+		
+		&.jd-hidden{
+			width:0px;
+			box-shadow: unset;
+			border: unset;
+		}
+		
+		&.ui-draggable-dragging{
+			box-shadow: 0px 0px 30px 5px black !important;
+			transform: scale(1.05) !important;
+		}
+		
+		*{margin:0px;}
+		
+		h2{
+			width:250px; // Prevent from squishing when we shrink away
+			padding-left:5px;
+			
+			font-size: 16pt;
+			font-weight:bold;
+
+			background: linear-gradient(90deg,.c()[d], 80%, .c()[p]) !important;
+		}
+		
+		#jd-cheat-menu{
+			width:250px;
+			padding:5px;
+			
+			h3{
+				font-size: 12pt;
+				font-weight:bold;
+				margin:0px;
+				
+				border:1px solid white;
+				border-width: 0px 0px 2px 0px;
+				margin:5px 0px;
+			}
+			ul{
+				padding:0px;
+				button{
+					padding:5px;
+					
+					border:2px solid white;
+					border-radius:10px;
+					
+					background: .c()[d];
+					color: .c()[t];
+					&:hover{
+						background: .c()[p];
+						border-color:.c()[p];
+					}
+				}
+			}
+			#Info_box_dark{
+				#Title_header,#light-divider{display:none;}
+				*{margin: 0 !important;}
+				min-width:unset;
+				width:100%;
+				background:unset;
+				#Tools_duplication{
+					display:flex;
+					gap:5px;
+					padding:5px;
+					text-align:unset;
+					#tools_asset{
+						flex-grow:1;
+					}
+					#tools_qty{
+						width:30%;
+					}
+				}
+				br{display:none;}
+				.Box_btn_submit_dark{
+					padding:0px;
+					width:100%;
+					#btn_transfer{
+						width:100%;
+					}
+				}
+			}
+			
+		}
+	}
+}
+
+@-moz-document domain("sunnkingdevops.azurewebsites.net"),domain("portal.sunnking.com") {
+
+	/*****************************/
+	/* HEADER/FOOTER	 		*/
+	/***************************/
+	// Trying out grid for root panel layout, too. Grids everywhere
+	body > div > div > div > .dx-scrollable-content > .dx-scrollview-content{
+		display:grid !important;
+		grid-template:
+			[header-s] "header" min-content [header-e]
+			[body-s] "body" 1fr [body-e]
+			[footer-s] "footer" min-content [footer-e]
+			/ 100vw;
+		> *:not(.ip_header):not(.content-footer){
+			grid-area:body;
+			overflow-x:auto; //Required, else header and footer expand with content. Can also add dummy col.
+		}
+		.ip_header{grid-area:header;}
+		.content-footer{grid-area:footer}
+	}
+	.ip_header{
+		// Colors
+		background:linear-gradient(90deg,.c()[d],90%, .c()[p]) !important;
+		//background-color: fadeOut( .c()[d],25% ) !important;
+		box-shadow:0px 0px 5px black;
+		border-bottom: 3px solid .c()[p];
+		// 
+		display:flex;
+		align-items:center;
+		height:fit-content;
+		*{margin:0px !important;}
+		//
+		overflow:hidden; // Just in case the cool logo shadows break
+		
+		// ----------
+		// Menus 
+		//div:first-child{ 
+		> .form{
+			order:1;
+			margin-right:auto !important;
+			
+			color:.c()[t];
+		}
+		
+		// ----------
+		// Logo
+		center{
+			order:3;
+			height:50px;
+			width:fit-content;
+			*{height:50px !important;}
+			img{
+				//filter:drop-shadow(0px 0px 5px .c()[p]) drop-shadow(0px 0px 5px .c()[t]);
+				filter:drop-shadow(10px 0px 5px .c()[p]) drop-shadow(-1px 0px 2px .c()[p]);
+				transition: filter 0.1s linear;
+				&:hover{
+					//filter:drop-shadow(0px 0px 5px .c()[t]) drop-shadow(0px 0px 5px .c()[p]);
+					filter:drop-shadow(0px 0px 5px .c()[t]);
+				}
+			}
+		}
+		
+		// ----------
+		// Search box
+		#div_layout_search{
+			margin:0px !important;
+			order:2;
+			
+			#layout_search{
+				box-sizing: border-box;
+				
+				border:none;
+				transition: filter 0.1s linear;
+				&:focus-visible{
+					outline:none;
+					border:2px solid .c()[p];
+					filter:drop-shadow(0px 0px 5px .c()[p]);
+				}
+			}
+		}
+		
+	}
+	.content-footer{
+		margin:unset;
+		border:unset;
+		background-color:transparent;
+		#footer{
+			background-color: fadeOut( .c()[d],25% ) !important;
+			box-shadow:0px 0px 5px black;
+			border-top: 3px solid .c()[p];
+		}
+	}
+	
+	// ----------
+	// Header sub-menus.
+	#menu,.dx-submenu{
+		ul li{
+			div{color:.c()[t];}
+			.dx-state-hover,.dx-menu-item-expanded{
+				background-color:.c[p];
+				transition:background-color 0.2s ease-in-out;
+			}
+		}
+	}
+	.dx-overlay-wrapper{
+		.dx-submenu{
+			.shadow(@r:10px);
+			//background-color:fadeout(.c()[d],25%);
+			background:linear-gradient(160deg, .c()[d] 25%, .c(1,@alpha:66%)[p]);
+			backdrop-filter:blur(10px);
+
+			border: 3px solid .c()[p];
+			border-top-color: .c()[d];
+		}
+		.dx-item > .dx-submenu{ // Nested menus need top border
+			border-top-color: .c()[p];
+			
+		}
+		.dx-menu-item-popout::before{ // Little submenu arrow
+			color:.c()[t];
+		}
+	}
+	
+	  // ******************** //
+	 // PRINTER SETTINGS	 //
+	// ******************** //
+	
+	//Process Page Printing
+	
+	//#printableArea,#assetTagArea{position:fixed;z-index:99}
+	#assetTagArea{width:fit-content !important;}
+	//#printableArea{display:block !important;}
+	
+	// 1x2 printing
+	@media print and (max-width:4in){
+		display:block !important;
+		#printableArea,#assetTagArea{
+			display:block !important;
+			//height:1in !important;
+			//width:2in !important;
+			width:10in !important;
+			#qrcodeCanvas, #AssetTagFirst,[id^="assetTagCopy"]{
+				//height:100% !important;
+				//width:100% !important;
+				padding:0px !important;
+				//padding:0.125in !important;
+				padding-left:0.125in !important;
+				padding-top:0.125in !important;
+				background:white;
+				//
+				display:grid !important;
+				grid-template-columns: 0.75in 1fr;
+				grid-template-rows:  1fr 1fr 1fr;
+				grid-template-areas: 
+					"qr date"
+					"qr asset"
+					"qr sku";
+				place-items:stretch;
+				//
+				h3,p{
+					padding:0px !important;margin:0px !important;
+					font-size:12pt;
+				}
+				#qrcode{
+					grid-area: qr;
+					height:0.75in !important;
+					place-self:center start;
+					margin:0px !important;
+				}
+				#print_Date, #print_Date1{
+					grid-area: date;
+					place-self:end start;
+				}
+				#print_Asset, #print_Asset1{
+					grid-area:asset;
+					font-size:14pt !important;
+					place-self:center start;
+					font-weight:bold;
+					border:1px solid black;
+					border-width:1px 0px;
+				}
+				#print_sku, #print_sku1{
+					grid-area:sku;
+					place-self:start start;
+				}
+			}
+		}
+		#printableArea_Large{
+			display:block !important;
+			height:1in;
+		}
+	}
+	
+	// 4x6 printing
+	@media print and (min-width:4in){
+		#printableArea, #assetTagArea{
+			display:block !important;
+			background:white;
+			height:4in !important;
+			width:6in !important;
+			#qrcodeCanvas{
+				height:100% !important;
+				width:100% !important;
+				
+				display:grid !important;
+				grid-template-columns:2in 1fr;
+				grid-template-rows: 0.4in 2in 1fr;
+				grid-template-areas:
+					"date date"
+					"qr asset" 
+					"sku sku";
+				//place-items:stretch;
+				place-items: center stretch;
+				
+				#qrcode{
+					grid-area: qr;
+					width:2in;height:2in;
+					image-rendering:crisp-edges;
+				}
+				h3,p{
+					font-size:20pt;
+					padding:0px !important;
+					margin:0px !important;
+					text-align:center;
+				}
+				#print_Date{
+					grid-area: date;
+					height:100%;
+					width:100%;
+					
+					font-size:0.3in;
+					font-weight:bold;
+					
+					border:1px solid black;
+					border-width:0px 0px 2px 0px;
+				}
+				#print_Asset{
+					grid-area:asset;
+					font-size:0.75in !important;
+					overflow:wrap !important;
+					//text-decoration: underline;
+				}
+				#print_sku{
+					grid-area:sku;
+					font-size:0.75in;
+					font-weight:bold;
+				}
+			}
+		}
+		#printableArea_Large{
+			display:block !important;
+			height:4in !important;
+			width:6in !important;
+		}
+	}
+}
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Inventory/Process/"), url-prefix("https://sunnkingdevops.azurewebsites.net/Inventory/ProcessAudit/"){
+	//
+	// LAYOUT
+	//
+	.float-container2{
+		background:transparent;
+		display:flex;
+		flex-flow:column;
+		padding:10px;
+
+		
+		// Fix titles clipping by just clipping everything outside the boxes lol
+		.CategoryBox:not(#AuditInformation2):not(#AssetDetails2),
+			#AuditInformation_box{overflow:clip;}
+		.Category_Title{
+			width:fit-content;
+			border:unset !important;
+			margin:0px !important;
+			
+			border-radius: 10px 0px 10px 0px !important;
+			h3{
+				padding:0 1em 0 0.5em !important;
+				margin:0px !important;
+			}
+			&:after{
+				display:none;
+			}
+		}
+		
+		// CONTENT HEADER
+		#ProcessArea_Header{			
+			// ASSET DETAILS
+			#AssetDetails2{
+				> div:last-child{ //Main body of Asset Details box
+					padding:0px !important;
+					#AssetDetails_Top,#AssetDetails_Bottom{
+						margin:0;
+						border:unset;
+						padding:10px !important;
+					}
+					#AssetDetails_Top{
+						table{
+							margin:0px;
+							width:100%;
+							td:first-child{
+								width:70px;
+								text-align:right;
+								padding-right:0.5em;
+							}
+							td:last-child{
+								display:flex;
+								flex-flow:row;
+								align-items:center;
+								input,select{
+									width:100%;
+								}
+								i,a{
+									margin:0 0.2em !important;
+									padding:0 !important;
+									&:before{line-height:24px;}
+								}
+								button i{margin:0px;}
+							}
+
+						}
+					}
+					#AssetDetails_Bottom{
+						border-top:1px solid .c()[p];
+						display:flex;
+					}
+					
+				}
+			}
+			// AUDIT INFORMATION
+			#AuditInformation2{
+				height:100%;
+				margin:0px !important;
+
+				display:flex;
+				flex-flow:column;
+				justify-content:flex-start;
+				gap:10px;
+
+				#AuditInformation_box{
+					padding:0px !important;
+					#AudtiInformation_Border{
+						border:unset;
+						margin:0px;
+						padding:10px !important;
+						table{
+							max-width:unset;
+							margin:0px;
+							
+							td:first-child{
+								text-align:right;
+								width:100px;
+								padding:0px 0.5em 0px 0px;
+							}
+						}
+					}
+					#Process_SKU{
+						animation:fadeIn 1s linear 0s 1 forwards;
+						display:inline-block;
+						overflow-x:hidden;
+						&:not(:empty)::before{
+							content:url('https://az.delta.sellercloud.com/assets/images/app/sellercloud/icon-white.svg');
+							display:inline-block;
+							height:18px;
+							width:18px;
+						}
+					}
+				}
+				#Process2_ButtonArea{
+					.p(0);
+					padding:0px;
+					display:flex;
+					flex-flow: row wrap;
+					justify-content:space-between;
+					>*{
+						flex-grow:1;
+						width:30px;
+						min-width:105px;
+						margin:5px;
+					}
+				}
+			}
+			#Notes_{
+				.padding_10{padding:10px !important;}
+			}
+		}
+		// CONTENT BODY
+		#ProcessArea{
+			margin:0px !important;
+			padding:0px !important;
+			gap:10px;
+			.CategoryBox{
+				margin:0px;
+				margin-bottom:10px;
+				table{
+					margin:10px;
+					width:calc(100% - 2 * $margin); // Would be better to have a container to pad
+					border-spacing:10px;
+					tbody{display:flex;flex-flow:column;gap:5px;}
+					tr{
+						display:grid;
+						grid-template-columns: max-content 1fr;
+						width:unset !important;
+						td:first-child{
+							width:100px;
+							text-align:right;
+							padding-right:1em;
+						}
+						td:last-child{
+							display:flex;
+							flex-flow:row wrap;
+							gap:5px;
+							align-content: center;
+							height:100%;
+							
+							button:not(.DetailAdd_btn):not(.DetailHide_btn){
+								flex-grow:1;
+								margin:0px;
+							}
+							.DetailAdd_btn,.DetailHide_btn{
+								align-self:center;
+								padding:0;
+								height:100%;aspect-ratio: 1 / 1;
+								width:unset;
+								margin:0px;
+								i{
+									width:100%;
+									height:100%;
+									margin:0px;
+									line-height:unset;
+									&::before{
+										display:block;
+										line-height:100%;
+									}
+								}
+							}
+							input,select{flex-grow:1;}
+						}
+					}
+				}
+				height:fit-content;
+			}
+			.Category_buttonArea{
+				width:100%;
+				display:flex;
+				flex-flow:row wrap;
+				>*{
+					flex-grow:1 ;
+				}
+			}
+		}
+		
+		// CATEGORY BOX GRID
+		#ProcessArea{
+/* 			display:grid;
+			grid-template: [r1-s] "one two three" 1fr [r1-e] / 1fr;
+			> div:nth-child(3n){grid-area:one;}
+			> div:nth-child(3n+1){grid-area:two;}
+			> div:nth-child(3n+2){grid-area:three;} */
+			.CategoryBox{
+				display:grid;
+				break-inside: avoid; // what a bizarre feature
+				grid-template:
+					[r1-s] "title controls" 30px [r1-e]
+					[r2-s] "content content" 1fr [r2-e]
+					/ max-content 1fr;
+
+				justify-items: end;
+				> .Category_Title{grid-area:title}
+				> .DetailsReset{grid-area:controls;}
+				> table{grid-area:content;place-self:stretch stretch;}
+			}
+		}
+	}
+	#singleDiv{ // weird divider div is actually a little useful?
+		height:10px;
+	}
+	// *********************** //
+	// POPUPS (TODO: Cleanup) //
+	// ********************* //
+	#popup_close{
+		all:revert;
+		transition: none;
+		z-index:998;
+
+		//
+		position:fixed !important;
+		top:0;
+		left:0;
+		width:100vw;
+		height:100vh;
+
+		margin:0px !important;
+		color:rgba(0,0,0,0);
+
+		&:hover ~ div[class^="content"]{
+			box-shadow: 0 0 20px red;
+			&::before{
+				border-color: red;
+				background-color:red;
+			}
+		}
+	}
+	.product_overlay, .template_overlay{
+		pointer-events: none;
+		* {
+			transition: none;
+			pointer-events: auto;
+		}
+		backdrop-filter:blur(3px);
+		//stacking context messes up the header
+		.product_popup{
+			h2 {display:none;} 
+			.content {
+				z-index: 999;
+				padding-top:2em; // Space for header & charcount add-on
+
+				br		{display:none;} // lol
+				p		{font-size:1em !important}
+				input	{margin-bottom:10px;}
+
+				&::before{
+					content:"Add New Product";
+
+					position:absolute;
+					top:0px;
+					left:0px;
+					z-index:998;
+
+					background-color:.c()[p];;
+					border:3px solid .c()[p];;
+					border-radius:0px 0px 10px 0px;
+
+					padding-right:5px;
+					font-weight:bold;
+				}
+			}
+		}
+	}
+	.product_popup {
+		display: flex;
+		flex-flow: row wrap;
+		z-index: 999 !important;
+		border: 3px solid #ff5722;
+		border-radius: 10px;
+		padding: 0px;
+		height: fit-content;
+
+		.content {
+			width: 100%;
+			padding: 5px;
+			*:not(i) {
+				width: 100% !important;
+				margin-bottom:3px !important;
+			}
+		}
+		button {
+			background-color: black;
+			color: white;
+			border: 2px solid .c()[p];
+			border-radius:10px;
+			margin-top:5px;
+
+			&:hover {
+				background-color: white;
+				color: black;
+			}
+		}
+	}
+	.template_popup{
+		padding:0px !important;
+		border:0px;
+		background:transparent;
+		height:fit-content;
+		h2{
+			height:35px;
+			width:fit-content;
+			margin:0px;
+			padding:0px 5px 0px 5px;
+			border-radius:10px 10px 0px 0px;
+			background-color:.c()[p];
+		}
+		.content2{
+			position:absolute;
+			z-index:999 !important;
+
+			display:flex;
+			align-items:center;
+
+			width:500px;
+			padding:10px;
+
+			border:3px solid .c()[p];
+			border-radius:0px 20px 20px 20px;
+			background-color:.c()[bg];
+
+			button{
+				width:120px !important;
+				border:2px solid .c()[p];
+				color:white;
+				background-color:black;
+			}
+			*{margin:5px;}
+			br{display:none;}
+		}
+	}
+	#ProductPopup_2{ // Ebay category selection
+		//display:flex !important;
+		//flex-flow:column wrap;
+		//gap:10px;
+		button[id^="ProductType_btn"]{
+				margin:5px 0px !important;
+				gap:10px;
+			
+				background-color:.c()[p] !important;
+				border:2px solid black !important;
+				color:white !important;
+				text-decoration:none !important;
+			&:hover{
+				background-color:black !important;
+			}
+		}
+	}
+	div[id^="popup"] {z-index: 999;}
+	
+	// ******************** //
+	// GRID QUERIES			//
+	// ******************** //
+	@media screen and (min-width:1200px){
+		#ProcessArea_Header{
+			&{
+				display: grid;
+				grid-template-columns: 	1fr 1fr 1fr;
+				gap: 10px;	
+			}
+			//>div{place-self:start start;height:fit-content;}
+			>div:nth-child(1) { grid-area: 1 / 1 / 3 / 2;}
+			>div:nth-child(2) { grid-area: 1 / 2 / 3 / 3;}
+			>div:nth-child(3) { grid-area: 1 / 3 / 2 / 4;}
+			>div:nth-child(4) { grid-area: 2 / 3 / 3 / 4;}
+			>.CategoryHeaderBox{
+				width:100% !important;
+				align-self:stretch;
+				>*{margin:0 !important;}
+			}
+		}
+	}
+	@media screen and (max-width:1200px) and (min-width:800px){
+		#ProcessArea_Header{
+			&{
+				display: grid;
+				grid-template-columns: 2fr minmax(350px,1fr);
+				gap:10px;
+			}
+			>div:nth-child(1) { grid-area: 1 / 1 / 1 / 1; }
+			>div:nth-child(2) { grid-area: 1 / 2 / 1 / 2; }
+			>div:nth-child(3) { grid-area: 2 / 2 / 2 / 2; }
+			>div:nth-child(4) { grid-area: 2 / 1 / 2 / 1; }
+			>.CategoryHeaderBox{
+				width:100% !important;
+				align-self:stretch;
+				>*{margin:0 !important;}
+			}
+		}
+	}
+	@media screen and (max-width:800px){
+		#ProcessArea_Header,#ProcessArea{
+			display:flex;
+			flex-flow:column;
+			gap:10px;
+		}
+		.CategoryBox{
+			margin:0px;
+		}
+	}
+	
+	// ******************** //
+	// AUDIT INFO LAYOUT	//
+	// ******************** //
+	#AuditInformation2{
+		tbody{
+			display:flex;
+			flex-flow:column;
+			
+			// Ordering
+			tr:nth-child(1){order:1;} // Account
+			tr:nth-child(2){order:3;} // Received
+			tr:nth-child(3){order:6;} // SKU
+			tr:nth-child(4){order:4;} // Pallet
+			tr:nth-child(5){order:2;} // Load
+			tr:nth-child(6){order:5;} // Technician
+			
+			// Styling
+			tr:nth-child(1),tr:nth-child(2),tr:nth-child(4),tr:nth-child(5){border:1px solid black;}
+			tr:nth-child(1){border-width:1px 1px 0px 1px;border-radius:10px 10px 0px 0px} // Account
+			tr:nth-child(5){border-width:0px 1px 0px 1px} // Load
+			tr:nth-child(2){border-width:0px 1px 0px 1px} // Received
+			tr:nth-child(4){border-width:0px 1px 1px 1px;border-radius:0px 0px 10px 10px} // Pallet
+			
+			tr:nth-child(3){
+				td:last-child{
+					display:flex;
+					align-items: center;
+					justify-content: flex-start;
+					>*{height:100%;margin:0px}
+					a{
+						
+					}
+					input{
+						margin:0 0.5em;
+					}
+					label{
+
+					}
+				}
+			}
+			tr:nth-child(6){margin-top:0.5em;}
+			
+			tr{
+				width:100% !important;
+				display:flex;
+				td:last-child{flex-grow:1;}
+			}
+		}
+	}
+	
+	// ********************** //
+	//	ASSET DETAILS LAYOUT //
+	// ******************** //
+	#AssetDetails_Top tbody{
+		display:grid;
+		grid-template-columns: 2fr 1fr 1fr;
+		grid-template-columns: 2fr 1fr 100px;
+		justify-content: stretch;
+		tr:nth-child(1){ grid-area: 1 / 1 / 1 / 3; }// Asset ID
+		tr:nth-child(2){ grid-area: 2 / 1 / 2 / 4; }// Serial #
+		tr:nth-child(3){ grid-area: 7 / 3 / 7 / 4; }// Qty
+		tr:nth-child(4){ grid-area: 4 / 1 / 4 / 4; }// Type
+		tr:nth-child(5){ grid-area: 5 / 1 / 5 / 4; }// Product
+		tr:nth-child(6){ grid-area: 6 / 1 / 6 / 4; }// Template
+		tr:nth-child(7){ grid-area: 7 / 1 / 7 / 3; }// Location
+		tr:nth-child(8){ grid-area: 1 / 3 / 1 / 4; }// Grade
+		
+		// Flex rows in order to grow their children horizontally
+		tr{
+			width:100% !important;
+			display:flex;
+			flex-flow: row;
+			td:first-child{ //Row headers
+				width:80px !important;
+				line-height:28px;
+			}
+			td:last-child{ //Row content
+				flex-grow:1;
+				display:flex;
+				input{
+					flex-grow:1;
+				}
+				padding:0px !important;
+			}
+		}
+		
+		// Override the special ones
+		
+		tr:nth-child(8),tr:nth-child(3){ //Grade, Qty
+			td:first-child{
+				width:fit-content !important;
+				padding:0 0.25em !important;
+			}
+			td:last-child{
+				&,*{width:100% !important;}
+			}
+		}
+		
+		// Icon adjustments
+		td{
+			position:relative; // Absolute icon requires positioned ancestors
+			input ~ i{
+				position:absolute;
+				right:0px;
+			}
+		}
+		
+		// Set width of input when dropdown is visible
+		#products_list {
+			&:focus-visible{
+				position:absolute;
+				min-width:80ch;
+				box-shadow:0px 0px 10px black;
+			}
+		}
+	}
+	
+	// PRODUCT SPECIFICS
+	#ProductSpecifics_table{
+		margin:0px !;
+		tbody{
+			gap:5px !important;
+			//outline:2px solid .c()[p];
+		}
+		tr{
+			border-radius:5px;
+			.shadow();
+			max-height:250px;
+			height:fit-content;
+			padding:5px 0px;
+			select[name^="selectMult"]{
+				height:240px;
+				margin:0px;
+			}
+		}
+		tr:nth-child(2n){background-color:.c(1)[bg]}
+		tr:nth-child(2n-1){background-color:.c(0)[bg]}
+	}
+	// ********************** //
+	//	DARK MODE 			 //
+	// ******************** //
+/* 	@media (prefers-color-scheme: dark){	
+		#ProcessArea  .CategoryBox{
+			// LAYOUT
+			&{
+				padding:10px;
+				gap:10px;
+				.Category_Title{
+					border-radius:10px !important;
+				}
+				> table{
+					margin:0px !important;
+					width:100% !important;
+				}
+			}
+			// STYLING
+			&{
+				.bg(comp, vertical);
+			}
+		}
+	} */
+}
+
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/Users"){
+	.jd-copytool-loading{
+		position:relative; //Required to properly position the pseudo-element
+		&::after{
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			position:absolute;
+			left:0;
+			top:0;
+
+			width:100%;
+			height:100%;
+			font-family: "Font Awesome 6 Pro";
+			content:'\f110';
+
+			color:.c()[p];;
+			font-weight:bold;
+
+			animation:loading;
+			animation-fill-mode:both;
+			animation-duration:1s;
+			animation-iteration-count:infinite;
+		}
+		&::before{
+			content:'';
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			position:absolute;
+			left:0;
+			top:0;
+			border-radius:10px;
+
+			border:1px solid red;
+			width:100%;
+			height:100%;
+			color:.c()[p];;
+			font-weight:bold;
+
+			backdrop-filter:blur(2px);
+		}
+	}
+	.jd-copytool-success{
+		border-color:lime !important;
+	}
+	.jd-copytool-failure{
+		border-color:red !important;
+	}
+	.page-wrap{
+		display:flex;
+		flex-flow: column;
+		&>*{
+			order:2;
+		}
+		#Settings_head{
+			order:1;
+			> h3{
+				text-align:center;
+				margin:0px;
+			}
+		}
+		#Settings_body{
+			pointer-events:none;
+			position:relative;
+			&::before{
+				content:'Locked';
+				display:flex;
+				position:absolute;
+				z-index:99;
+				left:0;
+				top:0;
+				
+				width:100%;
+				height:100%;
+				
+				justify-content:center;
+				align-items:center;
+				
+				font-weight:bold;
+				font-size:5em;
+				text-align:center;
+				border-radius:6px;
+				background-color:rgba(100, 100, 100, .72);
+				backdrop-filter:blur(2px);
+			}
+			line-height:100%;
+			box-sizing:border-box !important;
+			width:calc(100vw - 2em);
+			margin-left:1em;
+			margin-right:1em;
+			padding:0.5em;
+			
+			border:3px solid .c()[p];;
+			background-color:.c()[bg];;
+			border-radius:10px;
+		}
+		#Tools_duplication{
+			display:block !important;
+			order:1;
+			
+			align-self:center; 
+			
+			width:fit-content;
+			margin:1em;
+			padding:0.5em;
+			
+			border:3px solid .c()[p];;
+			border-radius:1em;
+			background-color:.c()[bg];;
+		}
+	}
+	table{
+		background-color:var(--gray);
+	}
+	tr{
+		width:100% !important;
+		td{padding:0 !important;}
+	}
+}
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/MassDismantle"){
+	#Info_box{
+		margin-left:auto !important;
+		margin-right:auto !important;
+		display:flex;
+		flex-flow:column wrap;
+		justify-content:space-around;
+		
+		>table{
+			margin-left:0px !important;
+			td{
+				padding-left:0px !important;
+				padding-bottom:0px !important;
+			}
+		}
+		br{display:none;}
+		h2{
+			padding:0px;
+			width:fit-content;
+			margin-left:auto;
+			margin-right:auto;
+		}
+		#Box_btn_submit{
+			padding:0px;
+			padding-top:10px;
+			padding-bottom:10px;
+			align-self:center;
+			margin-top:auto;
+			>button{margin-left:0 !important;}
+		}
+			
+	}
+	#div_mass_table{
+		>table{
+			margin:0px;
+			width:100%;
+			table-layout: auto !important;
+		}
+	}
+}
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/DuplicationTool"){
+	center > h3{
+		margin:0px !important;
+	}
+	#Tools_duplication{
+		margin:0px !important;
+	}
+}
+
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/View"),
+			   url-prefix("https://sunnkingdevops.azurewebsites.net/Reports/Sold"){
+	#gridAssets,#datagridSoldAssets{
+		overflow-x:scroll;
+		.dx-gridbase-container{
+			td{
+				padding-top:2px !important;
+				padding-bottom: 2px !important;
+				padding-right:5px !important;
+				padding-left:5px !important;
+				//text-overflow: ellipsis;
+/* 				white-space: normal; */
+				
+				transition: all 0.1s ease-in;
+			}
+/* 			td[role='gridcell']:hover:not(.dx-master-detail-cell):not([class^="dx-command"]):not(.dx-editor-cell){
+				position:fixed;
+				background-color:white;
+				white-space: normal;
+				overflow:visible;
+				
+				border:2px solid .c()[p];;
+				border-radius:0.5em;
+				box-shadow: 1px 1px 5px black;
+				
+				max-width: unset !important;
+				width: unset !important;
+			} */
+		}
+	}
+	col{
+		transition:width 0.5s ease-in-out;
+	}
+   .dx-row > td{
+	   white-space: unset !important;
+	   text-wrap: wrap !important;
+	   text-overflow:unset !important;
+   }
+	.dx-datagrid-table td:not([class]){
+		// Useless now, since cell text wraps
+/* 		   &:hover{
+			   background-color:lighten(.c()[p],25%) !important;
+			   position:absolute !important;
+			   max-width:unset !important;
+			   width:fit-content !important;
+			   box-shadow:0px 0px 10px 0px;
+			   border:unset !important;
+		   } */
+	}
+}
+
+@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Home/Dashboard"){
+	br{display:none;}
+	.sideMenu{box-sizing:border-box;}
+	.PortalSideBtns{
+		transition: box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+		box-sizing:border-box;
+		height:50px;
+		&:hover{
+			border:unset !important;
+			box-shadow: inset 0 0 5px gray;
+		}
+		&:first-child{
+			pointer-events:none;
+		}
+	}
+	#MainDashboard{
+		background:transparent;
+		padding:1em;
+
+		display:flex;
+		flex-flow: row wrap;
+		justify-content:space-around;
+		align-content:flex-start;
+		
+		width:calc(100% - 200px);
+		
+		>*{
+			margin:0px !important;
+			margin-bottom:1em !important;
+		}
+		>h3,>p{
+			height:32px;
+			line-height:32px;
+			padding:0em 1em;
+			background-color:.c()[bg];;
+		}
+		>h3{
+			border-radius:10px 0px 0px 10px;
+		}
+		>p{
+			border-radius:0px 10px 10px 0px;
+			margin-right:auto !important;
+			height:32px;
+			vertical-align:middle;
+			
+		}
+		h3{
+			background-color:white;
+			margin:0px;
+			margin-right:auto;
+			align-self:flex-start;
+
+		}
+		.flexDiv{
+			flex-flow: row wrap;
+			justify-content:center;
+/* 			margin:0px !important; */
+			width:100%;
+			
+			center{
+					width:100%;
+					height:100%;
+					
+					display:flex;
+					flex-flow:row wrap;
+					justify-content:center;
+					h3{
+						width:100%;
+					}
+					>h2,>i{
+						height:32px;
+						margin:0px;
+					}
+					>i{
+						&::before{
+							height:32px;
+							display:flex;
+							justify-content:center;
+							align-items:center;
+						}
+						top:0;
+					}
+			}
+			>div{
+				background:.c()[bg];;
+				
+				width:250px !important;
+				margin:0px;
+				
+				transition: border 0.1s linear;
+			}
+			>div:not(:first-child){margin-left:1em;}
+			>div:not(:last-child){margin-right:1em;}
+				
+			>div:hover{
+				border:1px solid red !important;
+			}
+		}
+		#barChart{
+			padding:0.5em;
+		}
+		#Portal_Chart_Recent_Bar{
+			width:750px;
+			svg{
+				width:100%;
+				& > rect{
+					width:100%;
+				}
+			}
+		}
+	}
+}
