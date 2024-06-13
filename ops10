@@ -7,16 +7,13 @@
 @preprocessor 	less
 ==/UserStyle== */
 
+// This is incredibly messy and has been patched together over months at work.
+// Godspeed, brave soldier
+
 .debug(){
 	outline:3px solid red;
 }
 
-/*****************************/
-/* Overrides
-/***************************/
-:root{
-	--bs-body-bg:#000 !important;
-}
 /*****************************/
 /* DEFINITIONS
 /***************************/
@@ -104,7 +101,7 @@
 	border-width:0px 3px !important;
 }
 
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net"),url-prefix("https://portal.sunnking.com"){
+@-moz-document url-prefix("https://ops.sunnking.com"){
 	// Global control stylings
 	html{
 		scrollbar-width:thin;
@@ -138,12 +135,86 @@
 	// ADD-ON ELEMENTS		//
 	// ******************** //
 	.jd-hidden{
-		//display: none;
-		// width:0px !important;
+		display: none;
+		//width:0px !important;
 		transform:scale(0);
 		pointer-events: none
 	}
 	
+	// ITEM SPECIFICS
+	#jd-ebay-panel{
+		button{
+			.button();
+			width:100%;
+			padding:5px;
+		}
+		table{
+			width:100%;
+			margin:0px !important;
+			tr{
+				th{
+					text-align: center;
+					border-bottom:1px solid black;
+				}
+				td,th{
+					padding:5px;
+					&:not(:first-child){
+						border-left:1px solid black;
+					}
+				}
+				&:hover{background-color: #bbb;}
+			}
+		}
+		#jd-ebay-controls{
+			padding:10px;
+		}
+		#jd-ebay-suggestions{
+			
+		}
+		#jd-ebay-aspect-table{
+			th:first-child,td:first-child{
+				width:150px;
+				text-align: right;
+				padding-right:10px;
+			}
+			//td,th{border:1px solid black;}
+			.jd-aspect-required .jd-aspect-name{color:red !important;}
+			
+			.jd-aspect-value{
+				padding:5px 5px;
+				select,input{
+					width:100%;
+				}
+			}
+			
+			fieldset{
+				display:flex;
+				flex-flow:row wrap;
+				gap:5px;
+				justify-content: space-around;
+				
+				label{
+					flex-grow:1;
+					margin:0px;
+					
+					text-align:center;
+					user-select:none;
+					
+					&.ui-checkboxradio-checked{background-color:.c()[p];}
+				}
+			}
+		}
+	}
+	fieldset{
+		//display:flex;
+		//flex-flow:row-wrap;
+		input{display:none;}
+		label{
+			border:1px solid black;
+			padding:2px;
+			border-radius:5px;
+		}
+	}
 	// SKU Printing
 	@media print and (min-width:4in){
 		#jd-print{
@@ -306,7 +377,7 @@
 	}
 }
 
-@-moz-document domain("sunnkingdevops.azurewebsites.net"),domain("portal.sunnking.com") {
+@-moz-document domain("ops.sunnking.com"){
 
 	/*****************************/
 	/* HEADER/FOOTER	 		*/
@@ -562,7 +633,7 @@
 		}
 	}
 }
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Inventory/Process/"), url-prefix("https://sunnkingdevops.azurewebsites.net/Inventory/ProcessAudit/"){
+@-moz-document url-prefix("https://ops.sunnking.com/Inventory/Process/"), url-prefix("https://ops.sunnking.com/Inventory/ProcessAudit/"){
 	//
 	// LAYOUT
 	//
@@ -1120,32 +1191,9 @@
 		tr:nth-child(2n){background-color:.c(1)[bg]}
 		tr:nth-child(2n-1){background-color:.c(0)[bg]}
 	}
-	// ********************** //
-	//	DARK MODE 			 //
-	// ******************** //
-/* 	@media (prefers-color-scheme: dark){	
-		#ProcessArea  .CategoryBox{
-			// LAYOUT
-			&{
-				padding:10px;
-				gap:10px;
-				.Category_Title{
-					border-radius:10px !important;
-				}
-				> table{
-					margin:0px !important;
-					width:100% !important;
-				}
-			}
-			// STYLING
-			&{
-				.bg(comp, vertical);
-			}
-		}
-	} */
 }
 
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/Users"){
+@-moz-document url-prefix("https://ops.sunnking.com/Tools/Users"){
 	.jd-copytool-loading{
 		position:relative; //Required to properly position the pseudo-element
 		&::after{
@@ -1265,7 +1313,7 @@
 		td{padding:0 !important;}
 	}
 }
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/MassDismantle"){
+@-moz-document url-prefix("https://ops.sunnking.com/Tools/MassDismantle"){
 	#Info_box{
 		margin-left:auto !important;
 		margin-right:auto !important;
@@ -1305,7 +1353,7 @@
 		}
 	}
 }
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Tools/DuplicationTool"){
+@-moz-document url-prefix("https://ops.sunnking.com/Tools/DuplicationTool"){
 	center > h3{
 		margin:0px !important;
 	}
@@ -1314,8 +1362,8 @@
 	}
 }
 
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/View"),
-			   url-prefix("https://sunnkingdevops.azurewebsites.net/Reports/Sold"){
+@-moz-document url-prefix("https://ops.sunnking.com/View"),
+			   url-prefix("https://ops.sunnking.com/Reports/Sold"){
 	#gridAssets,#datagridSoldAssets{
 		overflow-x:scroll;
 		.dx-gridbase-container{
@@ -1365,7 +1413,7 @@
 	}
 }
 
-@-moz-document url-prefix("https://sunnkingdevops.azurewebsites.net/Home/Dashboard"){
+@-moz-document url-prefix("https://ops.sunnking.com/Home/Dashboard"){
 	br{display:none;}
 	.sideMenu{box-sizing:border-box;}
 	.PortalSideBtns{
